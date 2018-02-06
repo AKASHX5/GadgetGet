@@ -1,0 +1,165 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package sudoku;
+
+import java.util.Scanner;
+
+/**
+ *
+ * @author akash
+ */
+public class Sudoku {
+
+
+    public static void main(String[] args) {
+        int Grid[][]=readPuzzle();// read a sudoku puzzle
+        if(!isValid(Grid))
+           System.out.println("invalid input");
+        else if (Search(Grid))
+        {
+            System.out.println("The solution is founf");
+                PrintGrid(Grid);
+        }
+        else System.out.println("No solution");
+
+
+     // Read a Sudoku puzzle from user
+
+    }     public static int[][] readPuzzle()
+     {
+         Scanner input = new Scanner(System.in);
+         System.out.println("Enter the Sudoku puzzle:");
+         int[][] Grid = new int [9][9];
+         for (int i=0;i<9;i++)
+             for (int j=0;j<9;j++)
+                 Grid[i][j]=input.nextInt();
+
+         return Grid;
+     }
+
+
+     //obtain a list of free cells from the puzzle
+     public static int[][] getFreeCellList(int[][] Grid)
+     {
+         int numberOfFreeCell=0;
+         for (int i=0;i<9;i++)
+             for (int j=0;j<9;j++)
+                 if(Grid[i][j]==0)
+                     numberOfFreeCell++;
+
+
+         //Store free cell positon in FreeCellList
+
+
+      int[][] FreeCellList=new int[numberOfFreeCell][2];
+      int count=0;
+       for (int i=0;i<9;i++)
+             for (int j=0;j<9;j++)
+                 if(Grid[i][j]==0)
+                 {
+                     FreeCellList[count][0]=i;
+                       FreeCellList[count++][1]=j;
+
+                 }
+     return FreeCellList;
+
+
+     }
+     // Print the values in the Grid
+     public static void PrintGrid(int[][] Grid)
+     {
+
+          for (int i=0;i<9;i++)
+             for (int j=0;j<9;j++)
+                 System.out.println(Grid[i][j] +" ");
+                 System.out.println();
+
+     }
+
+     //Search for the Solution
+
+     public static boolean Search(int[][] Grid)
+     {
+         int[][] FreeCellList=getFreeCellList(Grid);
+         int k=0; // first free cell
+         boolean found=false;
+
+         while(!found)
+         {
+             int i=FreeCellList[k][0];
+              int j=FreeCellList[k][1];
+              if(Grid[i][j]==0)
+                  Grid[i][j]=1;
+
+              if (isValid(i,j,Grid)){
+                  if(k+1==FreeCellList.length){
+                      found=true;
+                  }
+                  else {
+                      k++;
+                  }
+                }
+              else if (Grid[i][j]<9)
+              {
+                  Grid[i][j]=Grid[i][j]+1;
+              }
+              else {
+                  while (Grid[i][j]==9){
+                      Grid[i][j]=0;// reset to free cell
+                      if(k==0)
+                          return false;
+                  }
+                      k--;//backtrack
+                      i=FreeCellList[k][0];
+                      j=FreeCellList[k][1];
+
+                    }
+              Grid[i][j]=Grid[i][j]+1;
+
+        }
+
+
+     return true;
+}
+     public static boolean isValid(int i,int j, int [][]Grid)
+     {
+
+         // Check if Grid is valid at i's row
+         for(int col=0;col<9;col++)
+         if(col!=j && Grid[i][col] ==Grid[i][j])
+             return false;
+         //check if Grid is valid at j's column
+          for(int row=0;row<9;row++)
+         if(row!=i && Grid[row][j] ==Grid[i][j])
+             return false;
+
+
+          // Check if the Grid is valid in 3 by 3 box
+          for (int row = (i/3)*3;row<(i/3)*3+3;row++)
+              for(int col =((j/3)*3);col<(j/3)*3+3;col++)
+                  if(row!=1 && Grid[row][j]==Grid[i][j])
+                      return false;
+
+          return true;
+
+     }
+
+     public static boolean isValid(int [][] Grid)
+     {
+         for(int i=0;i<9;i++)
+             for(int j=0;j<9;j++)
+                 if (Grid[i][j]!=0 && !isValid(i,j,Grid))
+                     return false;
+
+         return true;
+
+     }
+
+
+
+
+
+}
